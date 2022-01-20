@@ -24,6 +24,22 @@ const getManufacturerByID = (req: Request, res: Response) => {
   });
 };
 
+const updateManufacturerByID = (req: Request, res: Response) => {
+  const manufacturerID = req.params.id;
+  const { name, foundedYear, nationality, logo } = req.body;
+
+  const query: string = `
+    UPDATE manufacturers
+    SET name = '${name}', founded_year = ${foundedYear}, nationality = ${nationality}, logo = '${logo}'
+    WHERE id = ${manufacturerID};
+  `;
+
+  db.query(query, (error, results, fields) => {
+    if (error) console.error(error);
+    res.status(200).json(results);
+  });
+};
+
 const deleteManufacturerByID = (req: Request, res: Response) => {
   const manufacturerID = req.params.id;
   const query: string = `DELETE FROM manufacturers WHERE id = ${manufacturerID};`;
@@ -46,8 +62,10 @@ const getAllManufacturers = (req: Request, res: Response) => {
 const postManufacturers = (req: Request, res: Response) => {
   const { name, foundedYear, nationality, logo } = req.body;
 
-  const query: string = `INSERT INTO manufacturers (name, founded_year, nationality, logo) 
-    VALUES ('${name}', ${foundedYear}, '${nationality}', ${logo});`;
+  const query: string = `
+    INSERT INTO manufacturers (name, founded_year, nationality, logo) 
+    VALUES ('${name}', ${foundedYear}, '${nationality}', ${logo});
+  `;
 
   db.query(query, (error, results, fields) => {
     if (error) console.error(error);
@@ -63,7 +81,7 @@ manufacturersRouter
 manufacturersRouter
   .route('/:id') // -> /api/manufacturers/:id
   .get(getManufacturerByID)
-  // TODO .put(updateManufacturerByID)
+  .put(updateManufacturerByID)
   .delete(deleteManufacturerByID);
 
 manufacturersRouter
