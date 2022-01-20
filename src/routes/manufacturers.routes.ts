@@ -1,11 +1,20 @@
-import express, { Router } from 'express';
+import express, { Router, Request, Response } from 'express';
 import { db } from '../db';
 
 export const manufacturersRouter: Router = express.Router();
 
 /* handler functions */
+const getBassesFromManufacturer = (req: Request, res: Response) => {
+  const manufacturerID = req.params.id;
+  const query: string = `SELECT * FROM basses WHERE manufacturer_id = ${manufacturerID}`;
 
-const getManufacturerByID = (req: express.Request, res: express.Response) => {
+  db.query(query, (error, results, fields) => {
+    if (error) console.error(error);
+    res.status(200).json(results);
+  });
+};
+
+const getManufacturerByID = (req: Request, res: Response) => {
   const manufacturerID = req.params.id;
   const query: string = `SELECT * FROM manufacturers WHERE id = ${manufacturerID}`;
 
@@ -15,15 +24,16 @@ const getManufacturerByID = (req: express.Request, res: express.Response) => {
   });
 };
 
-const getAllManufacturers = (req: express.Request, res: express.Response) => {
+const getAllManufacturers = (req: Request, res: Response) => {
   const query: string = 'SELECT * FROM manufacturers';
+
   db.query(query, (error, results, fields) => {
     if (error) console.error(error);
     res.status(200).json(results);
   });
 };
 
-const postManufacturers = (req: express.Request, res: express.Response) => {
+const postManufacturers = (req: Request, res: Response) => {
   const { name, foundedYear, nationality, logo } = req.body;
 
   const query: string = `INSERT INTO manufacturers (name, founded_year, nationality, logo) 
@@ -36,6 +46,10 @@ const postManufacturers = (req: express.Request, res: express.Response) => {
 };
 
 /* router */
+manufacturersRouter
+  .route('/:id/basses') // -> /api/manufacturers/:id/basses
+  .get(getBassesFromManufacturer);
+
 manufacturersRouter
   .route('/:id') // -> /api/manufacturers/:id
   .get(getManufacturerByID);
