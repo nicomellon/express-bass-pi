@@ -18,8 +18,8 @@ app.use(morgan('dev'));
  *                               Register all routes
  ***********************************************************************************/
 
-app.use('/basses', bassesRouter);
-app.use('/manufacturers', manufacturersRouter);
+app.use('/api/basses', bassesRouter);
+app.use('/api/manufacturers', manufacturersRouter);
 
 /************************************************************************************
  *                               Express Error Handling
