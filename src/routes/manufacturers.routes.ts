@@ -53,6 +53,8 @@ manufacturersRouter
 manufacturersRouter
   .route('/:id') // -> /api/manufacturers/:id
   .get(getManufacturerByID);
+// TODO .put(updateManufacturerByID)
+// TODO .delete(deleteManufacturerByID)
 
 manufacturersRouter
   .route('/') // -> /api/manufacturers

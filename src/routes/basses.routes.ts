@@ -4,6 +4,26 @@ import { db } from '../db';
 export const bassesRouter: Router = express.Router();
 
 /* handler functions */
+const deleteBassByID = (req: Request, res: Response) => {
+  const bassID = req.params.id;
+  const query: string = `DELETE FROM basses WHERE id = ${bassID}`;
+
+  db.query(query, (error, results, fields) => {
+    if (error) console.error(error);
+    res.status(200).json(results);
+  });
+};
+
+const getBassByID = (req: Request, res: Response) => {
+  const bassID = req.params.id;
+  const query: string = `SELECT * FROM basses WHERE id = ${bassID}`;
+
+  db.query(query, (error, results, fields) => {
+    if (error) console.error(error);
+    res.status(200).json(results);
+  });
+};
+
 const getRandomBass = (req: Request, res: Response) => {
   const query: string = 'SELECT * FROM basses';
 
@@ -40,6 +60,12 @@ const postBasses = (req: Request, res: Response) => {
 bassesRouter
   .route('/random') // -> /api/basses/random
   .get(getRandomBass);
+
+bassesRouter
+  .route('/:id') // -> /api/basses/:id
+  .get(getBassByID)
+  // TODO.put(updateBassByID)
+  .delete(deleteBassByID);
 
 bassesRouter
   .route('/') // -> /api/basses
