@@ -6,13 +6,30 @@ export const bassesRouter: Router = express.Router();
 /* handler functions */
 const getBassByID = (req: Request, res: Response) => {
   const bassID = req.params.id;
-  const query: string = `SELECT * FROM basses WHERE id = ${bassID}`;
+  const query: string = `SELECT * FROM basses WHERE id = ${bassID};`;
 
   db.query(query, (error, results, fields) => {
     if (error) console.error(error);
     res.status(200).json(results);
   });
 };
+
+const updateBassByID = (req: Request, res: Response) => {
+  const bassID = req.params.id;
+  const { manufacturerID, name, launchYear, image } = req.body;
+
+  const query: string = `
+    UPDATE basses
+    SET manufacturer_id = '${manufacturerID}', name = '${name}', launch_year = ${launchYear}, image = '${image}'
+    WHERE id = ${bassID};
+  `;
+
+  db.query(query, (error, results, fields) => {
+    if (error) console.error(error);
+    res.status(200).json(results);
+  });
+};
+
 const deleteBassByID = (req: Request, res: Response) => {
   const bassID = req.params.id;
   const query: string = `DELETE FROM basses WHERE id = ${bassID}`;
@@ -24,7 +41,7 @@ const deleteBassByID = (req: Request, res: Response) => {
 };
 
 const getRandomBass = (req: Request, res: Response) => {
-  const query: string = 'SELECT * FROM basses';
+  const query: string = 'SELECT * FROM basses;';
 
   db.query(query, (error, results, fields) => {
     if (error) console.error(error);
@@ -35,7 +52,7 @@ const getRandomBass = (req: Request, res: Response) => {
 };
 
 const getAllBasses = (req: Request, res: Response) => {
-  const query: string = 'SELECT * FROM basses';
+  const query: string = 'SELECT * FROM basses;';
 
   db.query(query, (error, results, fields) => {
     if (error) console.error(error);
@@ -44,10 +61,10 @@ const getAllBasses = (req: Request, res: Response) => {
 };
 
 const postBasses = (req: Request, res: Response) => {
-  const { manufacturerId, name, launchYear, image } = req.body;
+  const { manufacturerID, name, launchYear, image } = req.body;
 
   const query: string = `INSERT INTO basses (manufacturer_id, name, launch_year, image) 
-    VALUES (${manufacturerId}, '${name}', ${launchYear}, ${image});`;
+    VALUES (${manufacturerID}, '${name}', ${launchYear}, ${image});`;
 
   db.query(query, (error, results, fields) => {
     if (error) console.error(error);
@@ -63,7 +80,7 @@ bassesRouter
 bassesRouter
   .route('/:id') // -> /api/basses/:id
   .get(getBassByID)
-  // TODO.put(updateBassByID)
+  .put(updateBassByID)
   .delete(deleteBassByID);
 
 bassesRouter

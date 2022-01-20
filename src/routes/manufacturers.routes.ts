@@ -6,7 +6,7 @@ export const manufacturersRouter: Router = express.Router();
 /* handler functions */
 const getBassesFromManufacturer = (req: Request, res: Response) => {
   const manufacturerID = req.params.id;
-  const query: string = `SELECT * FROM basses WHERE manufacturer_id = ${manufacturerID}`;
+  const query: string = `SELECT * FROM basses WHERE manufacturer_id = ${manufacturerID};`;
 
   db.query(query, (error, results, fields) => {
     if (error) console.error(error);
@@ -16,7 +16,7 @@ const getBassesFromManufacturer = (req: Request, res: Response) => {
 
 const getManufacturerByID = (req: Request, res: Response) => {
   const manufacturerID = req.params.id;
-  const query: string = `SELECT * FROM manufacturers WHERE id = ${manufacturerID}`;
+  const query: string = `SELECT * FROM manufacturers WHERE id = ${manufacturerID};`;
 
   db.query(query, (error, results, fields) => {
     if (error) console.error(error);
@@ -26,7 +26,7 @@ const getManufacturerByID = (req: Request, res: Response) => {
 
 const deleteManufacturerByID = (req: Request, res: Response) => {
   const manufacturerID = req.params.id;
-  const query: string = `DELETE FROM manufacturers WHERE id = ${manufacturerID}`;
+  const query: string = `DELETE FROM manufacturers WHERE id = ${manufacturerID};`;
 
   db.query(query, (error, results, fields) => {
     if (error) console.error(error);
@@ -35,7 +35,7 @@ const deleteManufacturerByID = (req: Request, res: Response) => {
 };
 
 const getAllManufacturers = (req: Request, res: Response) => {
-  const query: string = 'SELECT * FROM manufacturers';
+  const query: string = 'SELECT * FROM manufacturers;';
 
   db.query(query, (error, results, fields) => {
     if (error) console.error(error);
