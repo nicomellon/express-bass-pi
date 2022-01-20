@@ -24,6 +24,16 @@ const getManufacturerByID = (req: Request, res: Response) => {
   });
 };
 
+const deleteManufacturerByID = (req: Request, res: Response) => {
+  const manufacturerID = req.params.id;
+  const query: string = `DELETE FROM manufacturers WHERE id = ${manufacturerID}`;
+
+  db.query(query, (error, results, fields) => {
+    if (error) console.error(error);
+    res.status(200).json(results);
+  });
+};
+
 const getAllManufacturers = (req: Request, res: Response) => {
   const query: string = 'SELECT * FROM manufacturers';
 
@@ -52,9 +62,9 @@ manufacturersRouter
 
 manufacturersRouter
   .route('/:id') // -> /api/manufacturers/:id
-  .get(getManufacturerByID);
-// TODO .put(updateManufacturerByID)
-// TODO .delete(deleteManufacturerByID)
+  .get(getManufacturerByID)
+  // TODO .put(updateManufacturerByID)
+  .delete(deleteManufacturerByID);
 
 manufacturersRouter
   .route('/') // -> /api/manufacturers
