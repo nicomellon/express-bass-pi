@@ -1,6 +1,6 @@
 import express, { Express, Router } from 'express';
 import morgan from 'morgan';
-import { bassesRouter } from './routes';
+import { bassesRouter, manufacturersRouter } from './routes';
 
 const app: Express = express();
 const router: Router = express.Router();
@@ -19,6 +19,7 @@ app.use(morgan('dev'));
  ***********************************************************************************/
 
 app.use('/basses', bassesRouter);
+app.use('/manufacturers', manufacturersRouter);
 
 /************************************************************************************
  *                               Express Error Handling
