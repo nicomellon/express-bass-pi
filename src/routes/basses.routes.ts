@@ -3,6 +3,7 @@ import { db } from '../db';
 
 export const bassesRouter: Router = express.Router();
 
+/* handler functions */
 const getAllBasses = (req: express.Request, res: express.Response) => {
   const query: string = 'SELECT * FROM basses';
   db.query(query, (error, results, fields) => {
@@ -20,10 +21,11 @@ const postBasses = (req: express.Request, res: express.Response) => {
 
   db.query(query, inserts, (error, results, fields) => {
     if (error) console.error(error);
-    res.json(results);
+    res.status(201).json(results);
   });
 };
 
+/* router */
 bassesRouter
   .route('/') // -> /api/basses
   .get(getAllBasses)
