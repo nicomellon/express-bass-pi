@@ -36,7 +36,7 @@ async function updateBassByID(req: Request, res: Response, next: NextFunction) {
 async function deleteBassByID(req: Request, res: Response, next: NextFunction) {
   try {
     const bassID = req.params.id;
-    const [rows, fields] = await db.query(
+    const [rows, fields] = await db.execute(
       `DELETE FROM basses WHERE id = ${bassID}`
     );
     res.status(200).json(rows);
@@ -47,7 +47,10 @@ async function deleteBassByID(req: Request, res: Response, next: NextFunction) {
 
 async function getRandomBass(req: Request, res: Response, next: NextFunction) {
   try {
-    const [rows, fields] = await db.execute('SELECT * FROM basses;');
+    const [rows, fields] = await db.execute(`
+    SELECT * FROM basses
+     ORDER BY RAND()
+     LIMIT 1;`);
     res.status(200).json(rows);
   } catch (error) {
     next(error);
@@ -67,7 +70,7 @@ async function postBasses(req: Request, res: Response, next: NextFunction) {
   try {
     const { manufacturerID, name, launchYear, image } = req.body;
 
-    const [rows, fields] = await db.query(`
+    const [rows, fields] = await db.execute(`
       INSERT INTO basses (manufacturer_id, name, launch_year, image) 
       VALUES (${manufacturerID}, '${name}', ${launchYear}, ${image});`);
     res.status(201).json(rows);
