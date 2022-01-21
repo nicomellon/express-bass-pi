@@ -1,9 +1,8 @@
-import express, { Express, Router } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import morgan from 'morgan';
 import { bassesRouter, manufacturersRouter } from './routes';
 
-const app: Express = express();
-const router: Router = express.Router();
+const app = express();
 
 /************************************************************************************
  *                              Basic Express Middlewares
@@ -26,19 +25,12 @@ app.use('/api/manufacturers', manufacturersRouter);
  ***********************************************************************************/
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-app.use(
-  (
-    err: Error,
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-  ) => {
-    return res.status(500).json({
-      errorName: err.name,
-      message: err.message,
-      stack: err.stack || 'no stack defined',
-    });
-  }
-);
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  return res.status(500).json({
+    errorName: err.name,
+    message: err.message,
+    stack: err.stack || 'no stack defined',
+  });
+});
 
 export default app;

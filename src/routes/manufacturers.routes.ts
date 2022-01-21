@@ -1,77 +1,89 @@
-import express, { Router, Request, Response } from 'express';
+import express, {
+  Router,
+  Request as Req,
+  Response as Res,
+  NextFunction as Next,
+} from 'express';
 import { db } from '../db';
 
-export const manufacturersRouter: Router = express.Router();
+const manufacturersRouter: Router = express.Router();
 
 /* handler functions */
-const getBassesFromManufacturer = (req: Request, res: Response) => {
-  const manufacturerID = req.params.id;
-  const query: string = `SELECT * FROM basses WHERE manufacturer_id = ${manufacturerID};`;
+async function getBassesFromManufacturer(req: Req, res: Res, next: Next) {
+  try {
+    const manufacturerID = req.params.id;
+    const [rows, fields] = await db.execute(
+      `SELECT * FROM basses WHERE manufacturer_id = ${manufacturerID};`
+    );
+    res.status(200).json(rows);
+  } catch (error) {
+    next(error);
+  }
+}
 
-  db.query(query, (error, results, fields) => {
-    if (error) console.error(error);
-    res.status(200).json(results);
-  });
-};
+async function getManufacturerByID(req: Req, res: Res, next: Next) {
+  try {
+    const manufacturerID = req.params.id;
+    const [rows, fields] = await db.execute(
+      `SELECT * FROM manufacturers WHERE id = ${manufacturerID};`
+    );
+    res.status(200).json(rows);
+  } catch (error) {
+    next(error);
+  }
+}
 
-const getManufacturerByID = (req: Request, res: Response) => {
-  const manufacturerID = req.params.id;
-  const query: string = `SELECT * FROM manufacturers WHERE id = ${manufacturerID};`;
+async function updateManufacturerByID(req: Req, res: Res, next: Next) {
+  try {
+    const manufacturerID = req.params.id;
+    const { name, foundedYear, nationality, logo } = req.body;
 
-  db.query(query, (error, results, fields) => {
-    if (error) console.error(error);
-    res.status(200).json(results);
-  });
-};
-
-const updateManufacturerByID = (req: Request, res: Response) => {
-  const manufacturerID = req.params.id;
-  const { name, foundedYear, nationality, logo } = req.body;
-
-  const query: string = `
+    const [rows, fields] = await db.execute(`
     UPDATE manufacturers
-    SET name = '${name}', founded_year = ${foundedYear}, nationality = ${nationality}, logo = '${logo}'
-    WHERE id = ${manufacturerID};
-  `;
+       SET name = '${name}', founded_year = ${foundedYear}, nationality = ${nationality}, logo = '${logo}'
+     WHERE id = ${manufacturerID};
+  `);
+    res.status(200).json(rows);
+  } catch (error) {
+    next(error);
+  }
+}
 
-  db.query(query, (error, results, fields) => {
-    if (error) console.error(error);
-    res.status(200).json(results);
-  });
-};
+async function deleteManufacturerByID(req: Req, res: Res, next: Next) {
+  try {
+    const manufacturerID = req.params.id;
+    const [rows, fields] = await db.execute(
+      `DELETE FROM manufacturers WHERE id = ${manufacturerID};`
+    );
+    res.status(200).json(rows);
+  } catch (error) {
+    next(error);
+  }
+}
 
-const deleteManufacturerByID = (req: Request, res: Response) => {
-  const manufacturerID = req.params.id;
-  const query: string = `DELETE FROM manufacturers WHERE id = ${manufacturerID};`;
+async function getAllManufacturers(req: Req, res: Res, next: Next) {
+  try {
+    const [rows, fields] = await db.execute('SELECT * FROM manufacturers;');
+    res.status(200).json(rows);
+  } catch (error) {
+    next(error);
+  }
+}
 
-  db.query(query, (error, results, fields) => {
-    if (error) console.error(error);
-    res.status(200).json(results);
-  });
-};
+async function postManufacturers(req: Req, res: Res, next: Next) {
+  try {
+    const { name, foundedYear, nationality, logo } = req.body;
 
-const getAllManufacturers = (req: Request, res: Response) => {
-  const query: string = 'SELECT * FROM manufacturers;';
+    const [rows, fields] = await db.execute(`
+      INSERT INTO manufacturers (name, founded_year, nationality, logo) 
+      VALUES ('${name}', ${foundedYear}, '${nationality}', ${logo});
+    `);
 
-  db.query(query, (error, results, fields) => {
-    if (error) console.error(error);
-    res.status(200).json(results);
-  });
-};
-
-const postManufacturers = (req: Request, res: Response) => {
-  const { name, foundedYear, nationality, logo } = req.body;
-
-  const query: string = `
-    INSERT INTO manufacturers (name, founded_year, nationality, logo) 
-    VALUES ('${name}', ${foundedYear}, '${nationality}', ${logo});
-  `;
-
-  db.query(query, (error, results, fields) => {
-    if (error) console.error(error);
-    res.status(201).json(results);
-  });
-};
+    res.status(201).json(rows);
+  } catch (error) {
+    next(error);
+  }
+}
 
 /* router */
 manufacturersRouter
@@ -88,3 +100,5 @@ manufacturersRouter
   .route('/') // -> /api/manufacturers
   .get(getAllManufacturers)
   .post(postManufacturers);
+
+export { manufacturersRouter };

@@ -1,76 +1,80 @@
-import express, { Router, Request, Response } from 'express';
+import express, { Router, Request, Response, NextFunction } from 'express';
 import { db } from '../db';
 
-export const bassesRouter: Router = express.Router();
+const bassesRouter: Router = express.Router();
 
 /* handler functions */
-const getBassByID = (req: Request, res: Response) => {
-  const bassID = req.params.id;
-  const query: string = `SELECT * FROM basses WHERE id = ${bassID};`;
+async function getBassByID(req: Request, res: Response, next: NextFunction) {
+  try {
+    const bassID = req.params.id;
+    const [rows, fields] = await db.execute(
+      `SELECT * FROM basses WHERE id = ${bassID};`
+    );
+    res.status(200).json(rows);
+  } catch (error) {
+    next(error);
+  }
+}
 
-  db.query(query, (error, results, fields) => {
-    if (error) console.error(error);
-    res.status(200).json(results);
-  });
-};
+async function updateBassByID(req: Request, res: Response, next: NextFunction) {
+  try {
+    const bassID = req.params.id;
+    const { manufacturerID, name, launchYear, image } = req.body;
 
-const updateBassByID = (req: Request, res: Response) => {
-  const bassID = req.params.id;
-  const { manufacturerID, name, launchYear, image } = req.body;
+    const [rows, fields] = await db.execute(`
+      UPDATE basses
+         SET manufacturer_id = '${manufacturerID}', name = '${name}', launch_year = ${launchYear}, image = '${image}'
+       WHERE id = ${bassID};
+    `);
 
-  const query: string = `
-    UPDATE basses
-    SET manufacturer_id = '${manufacturerID}', name = '${name}', launch_year = ${launchYear}, image = '${image}'
-    WHERE id = ${bassID};
-  `;
+    res.status(200).json(rows);
+  } catch (error) {
+    next(error);
+  }
+}
 
-  db.query(query, (error, results, fields) => {
-    if (error) console.error(error);
-    res.status(200).json(results);
-  });
-};
+async function deleteBassByID(req: Request, res: Response, next: NextFunction) {
+  try {
+    const bassID = req.params.id;
+    const [rows, fields] = await db.query(
+      `DELETE FROM basses WHERE id = ${bassID}`
+    );
+    res.status(200).json(rows);
+  } catch (error) {
+    next(error);
+  }
+}
 
-const deleteBassByID = (req: Request, res: Response) => {
-  const bassID = req.params.id;
-  const query: string = `DELETE FROM basses WHERE id = ${bassID}`;
+async function getRandomBass(req: Request, res: Response, next: NextFunction) {
+  try {
+    const [rows, fields] = await db.execute('SELECT * FROM basses;');
+    res.status(200).json(rows);
+  } catch (error) {
+    next(error);
+  }
+}
 
-  db.query(query, (error, results, fields) => {
-    if (error) console.error(error);
-    res.status(200).json(results);
-  });
-};
+async function getAllBasses(req: Request, res: Response, next: NextFunction) {
+  try {
+    const [rows, fields] = await db.execute('SELECT * FROM basses;');
+    res.status(200).json(rows);
+  } catch (error) {
+    next(error);
+  }
+}
 
-const getRandomBass = (req: Request, res: Response) => {
-  const query: string = 'SELECT * FROM basses;';
+async function postBasses(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { manufacturerID, name, launchYear, image } = req.body;
 
-  db.query(query, (error, results, fields) => {
-    if (error) console.error(error);
-
-    const randomIndex = Math.floor(Math.random() * results.length);
-    res.status(200).json(results[randomIndex]);
-  });
-};
-
-const getAllBasses = (req: Request, res: Response) => {
-  const query: string = 'SELECT * FROM basses;';
-
-  db.query(query, (error, results, fields) => {
-    if (error) console.error(error);
-    res.status(200).json(results);
-  });
-};
-
-const postBasses = (req: Request, res: Response) => {
-  const { manufacturerID, name, launchYear, image } = req.body;
-
-  const query: string = `INSERT INTO basses (manufacturer_id, name, launch_year, image) 
-    VALUES (${manufacturerID}, '${name}', ${launchYear}, ${image});`;
-
-  db.query(query, (error, results, fields) => {
-    if (error) console.error(error);
-    res.status(201).json(results);
-  });
-};
+    const [rows, fields] = await db.query(`
+      INSERT INTO basses (manufacturer_id, name, launch_year, image) 
+      VALUES (${manufacturerID}, '${name}', ${launchYear}, ${image});`);
+    res.status(201).json(rows);
+  } catch (error) {
+    next(error);
+  }
+}
 
 /* router */
 bassesRouter
@@ -87,3 +91,5 @@ bassesRouter
   .route('/') // -> /api/basses
   .get(getAllBasses)
   .post(postBasses);
+
+export { bassesRouter };
