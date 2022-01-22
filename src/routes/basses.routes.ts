@@ -3,6 +3,15 @@ import { db } from '../db';
 
 const bassesRouter: Router = express.Router();
 
+/* TypeScript interfaces */
+interface Bass {
+  id?: number;
+  manufacturerID: number;
+  name: string;
+  launchYear: number;
+  image: string | null;
+}
+
 /* handler functions */
 async function getBassByID(req: Request, res: Response, next: NextFunction) {
   try {
@@ -18,13 +27,18 @@ async function getBassByID(req: Request, res: Response, next: NextFunction) {
 
 async function updateBassByID(req: Request, res: Response, next: NextFunction) {
   try {
-    const bassID = req.params.id;
-    const { manufacturerID, name, launchYear, image } = req.body;
+    const updated: Bass = {
+      id: Number(req.params.id),
+      manufacturerID: req.body.manufacturerID,
+      name: req.body.name,
+      launchYear: req.body.launchYear,
+      image: req.body.image,
+    };
 
     const [rows, fields] = await db.execute(`
       UPDATE basses
-         SET manufacturer_id = '${manufacturerID}', name = '${name}', launch_year = ${launchYear}, image = '${image}'
-       WHERE id = ${bassID};
+         SET manufacturer_id = '${updated.manufacturerID}', name = '${updated.name}', launch_year = ${updated.launchYear}, image = '${updated.image}'
+       WHERE id = ${updated.id};
     `);
 
     res.status(200).json(rows);
@@ -68,11 +82,17 @@ async function getAllBasses(req: Request, res: Response, next: NextFunction) {
 
 async function postBasses(req: Request, res: Response, next: NextFunction) {
   try {
-    const { manufacturerID, name, launchYear, image } = req.body;
+    const newBass: Bass = {
+      manufacturerID: req.body.manufacturerID,
+      name: req.body.name,
+      launchYear: req.body.launchYear,
+      image: req.body.image,
+    };
 
     const [rows, fields] = await db.execute(`
       INSERT INTO basses (manufacturer_id, name, launch_year, image) 
-      VALUES (${manufacturerID}, '${name}', ${launchYear}, ${image});`);
+      VALUES (${newBass.manufacturerID}, '${newBass.name}', ${newBass.launchYear}, ${newBass.image});
+    `);
     res.status(201).json(rows);
   } catch (error) {
     next(error);
