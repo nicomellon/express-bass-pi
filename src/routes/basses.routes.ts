@@ -5,12 +5,12 @@ const bassesRouter: Router = express.Router();
 
 /* TypeScript interfaces */
 interface Bass {
-  id?: number;
   manufacturerID: number;
   name: string;
   strings: number;
   launchYear: number;
   image: string | null;
+  id?: number;
 }
 
 /* handler functions */
@@ -29,12 +29,12 @@ async function getBassByID(req: Request, res: Response, next: NextFunction) {
 async function updateBassByID(req: Request, res: Response, next: NextFunction) {
   try {
     const updated: Bass = {
-      id: Number(req.params.id),
       manufacturerID: req.body.manufacturerID,
       name: req.body.name,
       strings: req.body.strings,
       launchYear: req.body.launchYear,
       image: req.body.image,
+      id: Number(req.params.id),
     };
 
     const [rows, fields] = await db.execute(
@@ -43,14 +43,7 @@ async function updateBassByID(req: Request, res: Response, next: NextFunction) {
          SET manufacturer_id = ?, name = ?, strings = ?, launch_year = ?, image = ?
        WHERE id = ?;
     `,
-      [
-        updated.manufacturerID,
-        updated.name,
-        updated.strings,
-        updated.launchYear,
-        updated.image,
-        updated.id,
-      ]
+      Object.values(updated)
     );
 
     res.status(200).json(rows);
@@ -107,13 +100,7 @@ async function postBasses(req: Request, res: Response, next: NextFunction) {
       INSERT INTO basses (manufacturer_id, name, strings, launch_year, image) 
       VALUES (?, ?, ?, ?, ?);
     `,
-      [
-        newBass.manufacturerID,
-        newBass.name,
-        newBass.strings,
-        newBass.launchYear,
-        newBass.image,
-      ]
+      Object.values(newBass)
     );
     res.status(201).json(rows);
   } catch (error) {
