@@ -1,0 +1,17 @@
+{
+  "sqltools.connections": [
+    {
+      "mysqlOptions": {
+        "authProtocol": "default"
+      },
+      "previewLimit": 50,
+      "server": "database-1.chdxg6xj6r67.eu-central-1.rds.amazonaws.com",
+      "port": 3306,
+      "driver": "MySQL",
+      "name": "bass_pi",
+      "database": "bass_pi",
+      "username": "admin",
+      "password": "12341234"
+    }
+  ]
+}
